@@ -1,6 +1,9 @@
 import cv2
 import mediapipe as mp
 from csv import writer
+import pandas
+
+import numpy as np
 import sklearn
 import pickle
 
@@ -58,12 +61,14 @@ while True:
                 coordList.append(handPositionY[i])
                 cv2.circle(image, (handPositionX[i] + offset_x, handPositionY[i] + offset_y), 3, (0, 255, 0), -1)
 
+            print(len(coordList))
+            print(coordList)
+            prediction = model.predict([coordList])
+            coordList.clear()
+            cv2.putText(image, labels[prediction[0]], (handPositionX[0] + offset_x, handPositionY[0] + 200), cv2.FONT_HERSHEY_COMPLEX, 2, (255, 0, 255))
+
             handPositionX.clear()
             handPositionY.clear()
-            prediction = model.predict(coordList)
-            coordList.clear()
-
-        cv2.putText(image, labels[prediction], image.shape[0:1], cv2.FONT_HERSHEY_COMPLEX, 2, (255, 0, 255))
 
     cv2.imshow("Hand", image)  # Отображаем картинку
 
