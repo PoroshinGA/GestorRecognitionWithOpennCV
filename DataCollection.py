@@ -11,7 +11,7 @@ cap = cv2.VideoCapture(0)  # Камера
 hands = mp.solutions.hands.Hands(max_num_hands=1)  # Объект ИИ для определения ладони
 draw = mp.solutions.drawing_utils  # Для рисование ладони
 
-letter = "А"
+letter = 5
 dataList = [letter]
 counter = 1
 
@@ -59,7 +59,8 @@ while True:
                 for i in range(len(handPositionX)):
                     cv2.circle(image, (handPositionX[i] + offset_x, handPositionY[i] + offset_y), 3,
                                (0, 255, 0), -1)
-                    dataList.append((handPositionX[i], handPositionY[i]))
+                    dataList.append(handPositionX[i])
+                    dataList.append(handPositionY[i])
 
                 with open('data.csv', 'a', newline='') as data_csv:
                     writer_object = writer(data_csv)
