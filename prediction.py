@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import mediapipe as mp
 from csv import writer
@@ -15,7 +17,8 @@ hands = mp.solutions.hands.Hands(max_num_hands=1)
 draw = mp.solutions.drawing_utils
 
 coordList = []
-labels = ["А", "Б", "В"]
+labels = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П',
+          'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Ы', 'Э', 'Ь', 'Ю', 'Я']
 
 while True:
     if cv2.waitKey(1) & 0xFF == 27:
