@@ -6,7 +6,7 @@ from csv import writer
 import pandas
 
 import numpy as np
-import sklearn
+import sklearn 
 import pickle
 
 with open("model.pkl", 'rb') as f:

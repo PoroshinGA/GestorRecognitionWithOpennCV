@@ -15,9 +15,6 @@ while True:
     imageRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Конвертируем в rgb
     results = hands.process(imageRGB)  # Работа mediapipe
 
-    DEFAULT_OFFSET_X = 50
-    DEFAULT_OFFSET_Y = 50
-
     main_x, main_y = 0, 0
     handPositionX, handPositionY = [], []
     h, w, c = image.shape
@@ -26,26 +23,44 @@ while True:
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
                 x, y = lm.x, lm.y
-                cx, cy = int(x * w), int(y * h)
 
                 if id == 0:
-                    main_x, main_y = cx, cy
+                    main_x, main_y = x, y
 
-                relative_x, relative_y = int(cx - main_x), int(cy - main_y)
+                relative_x, relative_y = x - main_x, y - main_y
 
                 handPositionX.append(relative_x)
-                handPositionY.append(relative_y)
+                handPositionY.append(abs(relative_y))
 
             draw.draw_landmarks(image, handLms, mp.solutions.hands.HAND_CONNECTIONS)  # Рисуем ладонь
-            offset_x, offset_y = DEFAULT_OFFSET_X, h - DEFAULT_OFFSET_Y
+            offset_x, offset_y = 0, 0
 
-            if (min(handPositionX) < 0):
-                offset_x = DEFAULT_OFFSET_X - min(handPositionX)
-            if (max(handPositionY) > 0):
-                offset_y = h - DEFAULT_OFFSET_Y - max(handPositionY)
+            if min(handPositionX) < 0.0:
+                offset_x = abs(min(handPositionX))
+            if min(handPositionY) < 0.0:
+                offset_y = abs(min(handPositionY))
+
+            handPositionX = list(map(lambda it: it + offset_x, handPositionX))
+            handPositionY = list(map(lambda it: it + offset_y, handPositionY))
+
+            maxY = max(handPositionY)
+            maxX = max(handPositionX)
+
+            defaultHeight = 1
+            defaultWidth = 1
+
+            coefY = abs(defaultHeight / maxY) if maxY != 0 else 0
+            coefX = abs(defaultWidth / maxX) if maxX != 0 else 0
+
+            handPositionX = list(map(lambda it: it * coefX, handPositionX))
+            handPositionY = list(map(lambda it: it * coefY, handPositionY))
+
+            print(f"maxX {max(handPositionX)} minX {min(handPositionX)}")
+            print(f"maxY {max(handPositionY)} minY {min(handPositionY)}")
+            print("-----------------------")
 
             for i in range(len(handPositionX)):
-                cv2.circle(image, (handPositionX[i] + offset_x, handPositionY[i] + offset_y), 3, (0, 255, 0), -1)
+                cv2.circle(image, (int(handPositionX[i] * w), h + int(-1 * handPositionY[i] * h)), 3, (0, 255, 0), -1)
 
             handPositionX.clear()
             handPositionY.clear()
